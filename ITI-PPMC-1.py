@@ -1,48 +1,61 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # Encoder LZW
-
-# In[93]:
+# In[32]:
 
 
-import struct
-import time
-entrada='Teste.txt'
-file = open(entrada,"rb")
-ofile = open('saida_'+entrada+'.lzw', 'wb')
-data = file.read(1024*1024)
+import sys
+from sys import argv
+from struct import *
+
+input_file='Teste16mb.txt'
+file = open(input_file,'rb')                 
+data = file.read(1024*1024)                      
+
+# Building and initializing the dictionary.
 dictionary_size = 256                   
-dictionary = {str(i):i for i in range(dictionary_size)}
-#print(dictionary)
-nss='' #Next.Symbol.Sequence
-kss='' #Known.Symbol.Sequence
+dictionary = {str(i): i for i in range(dictionary_size)}    
+string = ""             # String is null.
+compressed_data = []    # variable to store the compressed data.
+
+# iterating through the input symbols.
+# LZW Compression algorithm
 while data:
-    for symbol in data:
-        #print(symbol)
-        nss=kss+str(dictionary[str(symbol)])
-        #print(symbol,nss,kss,sep='|')
-        if nss in dictionary:
-            kss=nss
+    for symbol in data:                     
+        string_plus_symbol = string + str(symbol) # get input symbol.
+        if string_plus_symbol in dictionary: 
+            string = string_plus_symbol
         else:
-            #ofile.write(bytearray(bin(dictionary[kss]),'utf-8'))
-            ofile.write(struct.pack('i', dictionary[kss]))
-            dictionary[nss] = dictionary_size
-            dictionary_size += 1
-            kss = str(symbol)
+            compressed_data.append(dictionary[string])
+            if(len(dictionary) <= 65535):
+                dictionary[string_plus_symbol] = dictionary_size
+                dictionary_size += 1
+            string = str(symbol)
     data = file.read(1024*1024)
-ofile.close()
+
+if string in dictionary:
+    compressed_data.append(dictionary[string])
+
+# storing the compressed string into a file (byte-wise).
+out = input_file.split(".")[0]
+output_file = open(out + ".lzw", "wb")
+print(out)
+for data in compressed_data:
+    output_file.write(pack('>H',int(data)))
+    
+output_file.close()
 file.close()
 
 
-# # Decoder
-
-# In[ ]:
+# In[33]:
 
 
-input_file, n = argv[1:]            
-maximum_table_size = pow(2,int(n))
-file = open(input_file, "rb")
+import sys
+from sys import argv
+import struct
+from struct import *
+
+file = open('Teste16mb.lzw', "rb")
 compressed_data = []
 next_code = 256
 decompressed_data = ""
@@ -79,4 +92,10 @@ for data in decompressed_data:
     
 output_file.close()
 file.close()
+
+
+# In[ ]:
+
+
+
 
