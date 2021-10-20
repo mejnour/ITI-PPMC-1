@@ -1,11 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# # Encoder LZW
-
-# In[93]:
-
-
 import struct
 import time
 entrada='Teste.txt'
@@ -34,10 +26,6 @@ while data:
 ofile.close()
 file.close()
 
-
-# # Decoder
-
-# In[ ]:
 
 
 input_file, n = argv[1:]            

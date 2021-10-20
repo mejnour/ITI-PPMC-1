@@ -1,19 +1,15 @@
 import sys
-
-def encoder(file):
-  print('encoder' + file)
-
-def decoder(file):
-  print('decoder' + file)
+import decoder
+import encoder
 
 def run():
   try:
     encodeOrDecode = sys.argv[1]
 
     if (encodeOrDecode == 'encode'):
-      encoder(sys.argv[2])
+      encoder.run(sys.argv[2])
     elif (encodeOrDecode == 'decode'):
-      decoder(sys.argv[2])
+      decoder.run(sys.argv[2])
 
   except:
     print('Review code parameters.')
