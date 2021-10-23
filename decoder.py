@@ -8,35 +8,35 @@ def decoder(file):
   print('.', end='', flush=True)    
 
   openedFile = open(file, "rb")
-  compressed_data = []
+  lzwCompressed = []
   next_code = 256
-  decompressed_data = ""
-  string = ""
+  lzwDecompressed = ""
+  currentStr = ""
 
   while True:
-      rec = openedFile.read(2)
-      if len(rec) != 2:
+      twoBitStepper = openedFile.read(2)
+      if len(twoBitStepper) != 2:
           break
-      (data, ) = unpack('>H', rec)
-      compressed_data.append(data)
+      (data, ) = unpack('<H', twoBitStepper)
+      lzwCompressed.append(data)
 
-  dictionary_size = 256
-  dictionary = dict([(x, chr(x)) for x in range(dictionary_size)])
+  dictionarySize = 256
+  dictionary = dict([(x, chr(x)) for x in range(dictionarySize)])
 
   print('.', end='', flush=True)
 
-  for code in compressed_data:
+  for code in lzwCompressed:
       if not (code in dictionary):
-          dictionary[code] = string + (string[0])
-      decompressed_data += dictionary[code]
-      if not(len(string) == 0):
-          dictionary[next_code] = string + (dictionary[code][0])
+          dictionary[code] = currentStr + (currentStr[0])
+      lzwDecompressed += dictionary[code]
+      if not(len(currentStr) == 0):
+          dictionary[next_code] = currentStr + (dictionary[code][0])
           next_code += 1
-      string = dictionary[code]
+      currentStr = dictionary[code]
 
   out = file.split(".")[0]
-  output_file = open(out + "_decoded.txt", "w")
-  for data in decompressed_data:
+  output_file = open(out + "Extract.txt", "w")
+  for data in lzwDecompressed:
       output_file.write(data)
       
   output_file.close()

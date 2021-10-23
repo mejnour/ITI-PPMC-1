@@ -9,34 +9,38 @@ def encoder(file):
   print('.', end='', flush=True)
   openedFile = open(file,'rb')                 
   data = openedFile.read()                      
-  k=9
-  dictionary_size = 256                   
-  dictionary = {str(i): i for i in range(dictionary_size)}    
-  string = ""
-  compressed_data = []
+  k=16
+  dictionarySize = 256
 
-  for symbol in data:
-    string_plus_symbol = string + str(symbol)
+  dictionary = {}
+  for i in range(dictionarySize):
+      dictionary[str(i)] = i
+      
+  currentStr = ""
+  lzwCompressed = []
+
+  for binCode in data:
+    AccumulatedSymbol = currentStr + str(binCode)
   
-    if string_plus_symbol in dictionary: 
-      string = string_plus_symbol
+    if AccumulatedSymbol in dictionary: 
+      currentStr = AccumulatedSymbol
   
     else:
-      compressed_data.append(dictionary[string])
+      lzwCompressed.append(dictionary[currentStr])
       if(len(dictionary) <= 2**k):
-        dictionary[string_plus_symbol] = dictionary_size
-        dictionary_size += 1
-        string = str(symbol)
+        dictionary[AccumulatedSymbol] = dictionarySize
+        dictionarySize += 1
+        currentStr = str(binCode)
 
   print('.', end='', flush=True)
 
-  if string in dictionary:
-      compressed_data.append(dictionary[string])
+  if currentStr in dictionary:
+      lzwCompressed.append(dictionary[currentStr])
 
   out = file.split(".")[0]
   output_file = open(out + ".lzw", "wb")
-  for data in compressed_data:
-      output_file.write(pack('>H',int(data)))
+  for data in lzwCompressed:
+    output_file.write(pack('<H',int(data)))
         
   output_file.close()
   openedFile.close()
