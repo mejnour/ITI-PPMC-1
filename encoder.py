@@ -8,27 +8,25 @@ import helper
 def encoder(file):
   print('.', end='', flush=True)
   openedFile = open(file,'rb')                 
-  data = openedFile.read(1024*1024)                      
-
+  data = openedFile.read()                      
+  k=9
   dictionary_size = 256                   
   dictionary = {str(i): i for i in range(dictionary_size)}    
   string = ""
   compressed_data = []
 
-  while data:
-    for symbol in data:
-      string_plus_symbol = string + str(symbol)
-
-      if string_plus_symbol in dictionary: 
-        string = string_plus_symbol
-
-      else:
-        compressed_data.append(dictionary[string])
-        if(len(dictionary) <= 65535):
-          dictionary[string_plus_symbol] = dictionary_size
-          dictionary_size += 1
-          string = str(symbol)
-    data = openedFile.read(1024*1024)
+  for symbol in data:
+    string_plus_symbol = string + str(symbol)
+  
+    if string_plus_symbol in dictionary: 
+      string = string_plus_symbol
+  
+    else:
+      compressed_data.append(dictionary[string])
+      if(len(dictionary) <= 2**k):
+        dictionary[string_plus_symbol] = dictionary_size
+        dictionary_size += 1
+        string = str(symbol)
 
   print('.', end='', flush=True)
 
